@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_shop_app/screens/register_screen.dart';
+import 'package:pet_shop_app/screens/main_navigation_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -193,6 +194,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: ElevatedButton(
                     onPressed: () {
                       debugPrint('Login pressed: ${_emailController.text}');
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const MainNavigationScreen(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: buttonColor,
