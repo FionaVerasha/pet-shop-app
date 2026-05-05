@@ -9,42 +9,47 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   String selectedCategory = 'Dogs';
+  int cartCount = 0;
 
   final List<String> categories = ['Dogs', 'Cats', 'Others'];
 
   final List<Map<String, dynamic>> allProducts = [
     // Dogs Section (4 Products)
     {
-      'name': 'Premium Kibble',
-      'brand': 'Royal Canin',
+      'name': 'Premium Dog Food',
+      'brand': 'Super Feed',
       'price': 45.00,
-      'image': 'https://images.unsplash.com/photo-1589924691106-07c26da3b8bf?q=80&w=1000&auto=format&fit=crop',
+      'image': 'assets/images/premium_dog_food.png',
       'category': 'Dogs',
       'isFavorite': false,
+      'isAsset': true,
     },
     {
-      'name': 'Organic Beef Jerky',
-      'brand': 'Purina Pro',
+      'name': 'Pedigree Dog Food',
+      'brand': 'Pedigree',
       'price': 12.50,
-      'image': 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=1000&auto=format&fit=crop',
+      'image': 'assets/images/pedigree_dog_food.png',
       'category': 'Dogs',
       'isFavorite': true,
+      'isAsset': true,
     },
     {
-      'name': 'Dental Chew Sticks',
-      'brand': 'Pedigree',
-      'price': 8.99,
-      'image': 'https://images.unsplash.com/photo-1544568100-847a948585b9?q=80&w=1000&auto=format&fit=crop',
+      'name': 'Best Premium Dog Food',
+      'brand': 'Super Feed',
+      'price': 55.00,
+      'image': 'assets/images/best_premium_dog_food.png',
       'category': 'Dogs',
       'isFavorite': false,
+      'isAsset': true,
     },
     {
-      'name': 'Training Treats',
-      'brand': 'Zuke\'s',
+      'name': 'Chappi Dog Food',
+      'brand': 'Chappi',
       'price': 14.99,
-      'image': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?q=80&w=1000&auto=format&fit=crop',
+      'image': 'assets/images/chappi_dog_food.jpg',
       'category': 'Dogs',
       'isFavorite': false,
+      'isAsset': true,
     },
     // Cats Section (4 Products)
     {
@@ -158,17 +163,19 @@ class _ShopScreenState extends State<ShopScreen> {
                 Positioned(
                   top: 5,
                   right: 0,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                      color: Color(0xFFFFD700),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Text(
-                      '3',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
-                  ),
+                  child: cartCount == 0 
+                    ? const SizedBox.shrink() 
+                    : Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: const BoxDecoration(
+                          color: Color(0xFFFFD700),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Text(
+                          cartCount.toString(),
+                          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.black),
+                        ),
+                      ),
                 ),
               ],
             ),
@@ -226,7 +233,7 @@ class _ShopScreenState extends State<ShopScreen> {
                 : GridView.builder(
                     gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.65,
+                      childAspectRatio: 0.48,
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
@@ -244,26 +251,50 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   Widget _buildProductCard(Map<String, dynamic> product) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Expanded(
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.grey[100],
-              borderRadius: BorderRadius.circular(20),
-            ),
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 15,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
             child: Stack(
               children: [
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(15),
-                      child: Image.network(
-                        product['image'],
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 50, color: Colors.grey),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF8F9FA),
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  child: Center(
+                    child: Hero(
+                      tag: product['name'],
+                      child: Transform.scale(
+                        scale: 1.2,
+                        child: SizedBox(
+                          height: 240,
+                          width: 200,
+                          child: product['isAsset'] == true
+                              ? Image.asset(
+                                  product['image'],
+                                  fit: BoxFit.contain,
+                                )
+                              : Image.network(
+                                  product['image'],
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 50, color: Colors.grey),
+                                ),
+                        ),
                       ),
                     ),
                   ),
@@ -271,46 +302,99 @@ class _ShopScreenState extends State<ShopScreen> {
                 Positioned(
                   top: 12,
                   right: 12,
-                  child: Icon(
-                    product['isFavorite'] ? Icons.favorite : Icons.favorite_border,
-                    color: product['isFavorite'] ? Colors.red : Colors.black54,
-                    size: 22,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.9),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      product['isFavorite'] ? Icons.favorite : Icons.favorite_border,
+                      color: product['isFavorite'] ? Colors.red : Colors.black45,
+                      size: 20,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          product['brand'],
-          style: TextStyle(color: Colors.grey[600], fontSize: 12),
-        ),
-        Text(
-          product['name'],
-          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(height: 4),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              '\$${product['price'].toStringAsFixed(2)}',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Color(0xFF2D7B37)),
+          Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  product['brand'],
+                  style: TextStyle(
+                    color: Colors.grey[500],
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  product['name'],
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '\$${product['price'].toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w900,
+                        fontSize: 18,
+                        color: Color(0xFF2D7B37),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        cartCount++;
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${product['name']} added to cart!'),
+                          backgroundColor: const Color(0xFF2D7B37),
+                          behavior: SnackBarBehavior.floating,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          duration: const Duration(seconds: 1),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFFFD700),
+                      foregroundColor: Colors.black,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    child: const Text(
+                      'Add to Cart',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.all(6),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey[300]!),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Icons.shopping_cart_outlined, size: 18),
-            ),
-          ],
-        ),
-      ],
+          ),
+        ],
+      ),
     );
   }
 }
