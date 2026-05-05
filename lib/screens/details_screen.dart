@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop_app/theme_manager.dart';
 
 class DetailsScreen extends StatelessWidget {
   final Map<String, dynamic>? pet;
@@ -25,21 +26,37 @@ class DetailsScreen extends StatelessWidget {
 
     final bool isProduct = data.containsKey('category');
     final Color bgColor = isProduct ? const Color(0xFFF8F9FA) : Color(data['bgColor']);
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1C28),
+      backgroundColor: isDark ? const Color(0xFF090B13) : const Color(0xFF1A1C28),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+          icon: Icon(Icons.arrow_back_ios_new, color: isDark ? Colors.white : Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: const Text(
-          'Pet Details',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        title: Text(
+          data['name'],
+          style: TextStyle(color: isDark ? Colors.white : Colors.white, fontWeight: FontWeight.bold),
         ),
+        actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: appThemeMode,
+            builder: (context, themeMode, child) {
+              return IconButton(
+                icon: Icon(
+                  themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                  color: isDark ? Colors.white : Colors.white,
+                ),
+                onPressed: toggleThemeMode,
+              );
+            },
+          ),
+        ],
       ),
       extendBodyBehindAppBar: true,
       body: Stack(
@@ -52,13 +69,13 @@ class DetailsScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 80,
+            top: 72,
             left: 0,
             right: 0,
             child: Center(
               child: Container(
-                width: 280,
-                height: 280,
+                width: 310,
+                height: 310,
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.12),
                   shape: BoxShape.circle,
@@ -67,46 +84,48 @@ class DetailsScreen extends StatelessWidget {
             ),
           ),
           Positioned(
-            top: 98,
+            top: 92,
             left: 0,
             right: 0,
             child: Center(
               child: Hero(
                 tag: data['name'],
                 child: Container(
-                  width: 220,
-                  height: 220,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  width: 250,
+                  height: 250,
+                  decoration: BoxDecoration(
+                    color: isDark ? const Color(0xFF111827) : Colors.white,
                     shape: BoxShape.circle,
                   ),
                   padding: const EdgeInsets.all(16),
-                  child: Center(
-                    child: isProduct
-                      ? data['isAsset'] == true
-                          ? Image.asset(data['image'], fit: BoxFit.contain)
-                          : Image.network(data['image'], fit: BoxFit.contain)
-                      : ClipOval(
-                          child: Image.network(
+                  child: ClipOval(
+                    child: Container(
+                      color: isDark ? const Color(0xFF111827) : Colors.white,
+                      padding: const EdgeInsets.all(8),
+                      child: isProduct
+                        ? data['isAsset'] == true
+                            ? Image.asset(data['image'], fit: BoxFit.contain)
+                            : Image.network(data['image'], fit: BoxFit.contain)
+                        : Image.network(
                             data['image'],
                             fit: BoxFit.cover,
                             errorBuilder: (c, e, s) => const Icon(Icons.pets, size: 100, color: Colors.white),
                           ),
-                        ),
+                    ),
                   ),
                 ),
               ),
             ),
           ),
           Positioned(
-            top: 320,
+            top: 360,
             left: 0,
             right: 0,
             bottom: 0,
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF111827) : Colors.white,
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(40),
                   topRight: Radius.circular(40),
                 ),
@@ -118,10 +137,10 @@ class DetailsScreen extends StatelessWidget {
                   children: [
                     Text(
                       data['name'],
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -132,7 +151,7 @@ class DetailsScreen extends StatelessWidget {
                           child: Text(
                             isProduct ? data['brand'] : data['distance'],
                             style: TextStyle(
-                              color: Colors.grey.shade600,
+                              color: isDark ? Colors.grey[400] : Colors.grey.shade600,
                               fontSize: 14,
                             ),
                           ),
@@ -159,17 +178,18 @@ class DetailsScreen extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildInfoBox(isProduct ? 'Weight' : 'Sex', isProduct ? '10 kg' : data['gender']),
-                        _buildInfoBox(isProduct ? 'Category' : 'Age', isProduct ? data['category'] : data['age']),
-                        _buildInfoBox(isProduct ? 'Exp. Date' : 'Weight', isProduct ? '12/2026' : (data['weight'] ?? '10 kg')),
+                        _buildInfoBox(context, isProduct ? 'Weight' : 'Sex', isProduct ? '10 kg' : data['gender']),
+                        _buildInfoBox(context, isProduct ? 'Category' : 'Age', isProduct ? data['category'] : data['age']),
+                        _buildInfoBox(context, isProduct ? 'Exp. Date' : 'Weight', isProduct ? '12/2026' : (data['weight'] ?? '10 kg')),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Description',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color: isDark ? Colors.white : Colors.black,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -178,7 +198,7 @@ class DetailsScreen extends StatelessWidget {
                         ? 'This premium ${data['category'].toLowerCase()} food is formulated with high-quality ingredients to support your pet\'s health and vitality. It contains essential vitamins, minerals, and proteins for a balanced diet.'
                         : 'There are some dogs that are naturally very intelligent. They do not need to repeat the command 100 times, because they grasp everything on the fly.',
                       style: TextStyle(
-                        color: Colors.grey.shade600,
+                        color: isDark ? Colors.grey[300] : Colors.grey.shade600,
                         height: 1.5,
                         fontSize: 14,
                       ),
@@ -203,7 +223,7 @@ class DetailsScreen extends StatelessWidget {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF1A1C28),
+                          backgroundColor: isDark ? const Color(0xFF0F172A) : const Color(0xFF1A1C28),
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
@@ -230,19 +250,20 @@ class DetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoBox(String title, String value) {
+  Widget _buildInfoBox(BuildContext context, String title, String value) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       width: 100,
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: Colors.blueGrey.shade50.withOpacity(0.5),
+        color: isDark ? const Color(0xFF0F172A) : Colors.blueGrey.shade50.withOpacity(0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-          Text(title, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.normal)),
+          Text(title, style: TextStyle(color: isDark ? Colors.grey[300] : Colors.black87, fontWeight: FontWeight.normal)),
           const SizedBox(height: 4),
-          Text(value, style: const TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+          Text(value, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: FontWeight.bold)),
         ],
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop_app/theme_manager.dart';
 import 'details_screen.dart';
 
 class ShopScreen extends StatefulWidget {
@@ -134,30 +135,47 @@ class _ShopScreenState extends State<ShopScreen> {
         .where((product) => product['category'] == selectedCategory)
         .toList();
 
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: theme.scaffoldBackgroundColor,
         elevation: 0,
         title: Container(
           height: 45,
           decoration: BoxDecoration(
-            color: Colors.grey[100],
+            color: theme.inputDecorationTheme.fillColor,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const TextField(
+          child: TextField(
+            style: TextStyle(color: isDark ? Colors.white : Colors.black),
             decoration: InputDecoration(
               hintText: 'Search pet food...',
-              prefixIcon: Icon(Icons.search, color: Colors.grey),
-              suffixIcon: Icon(Icons.tune, color: Colors.grey),
+              prefixIcon: Icon(Icons.search, color: isDark ? Colors.grey[400] : Colors.grey),
+              suffixIcon: Icon(Icons.tune, color: isDark ? Colors.grey[400] : Colors.grey),
               border: InputBorder.none,
-              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+              hintStyle: TextStyle(color: isDark ? Colors.grey[400] : Colors.grey),
             ),
           ),
         ),
         actions: [
+          ValueListenableBuilder<ThemeMode>(
+            valueListenable: appThemeMode,
+            builder: (context, themeMode, child) {
+              return IconButton(
+                icon: Icon(
+                  themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                  color: isDark ? Colors.white : Colors.black,
+                ),
+                onPressed: toggleThemeMode,
+              );
+            },
+          ),
           Padding(
-            padding: const EdgeInsets.only(right: 16.0),
+            padding: const EdgeInsets.only(right: 8.0),
             child: GestureDetector(
               onTap: () => _showCartItems(context),
               child: Stack(
@@ -198,26 +216,52 @@ class _ShopScreenState extends State<ShopScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Shop the Best for Your Pets',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : const Color(0xFF1A1A1A),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Find perfectly sized products, fresh favorites, and premium nutrition in one place.',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: isDark ? Colors.grey[300] : const Color(0xFF6B7280),
+                    height: 1.6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 20),
           // Category Dropdown at the Left
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
               decoration: BoxDecoration(
-                color: const Color(0xFFFFD700),
+                color: isDark ? const Color(0xFF2F855A) : const Color(0xFFFFD700),
                 borderRadius: BorderRadius.circular(15),
               ),
               child: DropdownButtonHideUnderline(
                 child: DropdownButton<String>(
                   value: selectedCategory,
-                  icon: const Icon(Icons.keyboard_arrow_down, color: Colors.black, size: 28),
-                  style: const TextStyle(
-                    color: Colors.black,
+                  icon: Icon(Icons.keyboard_arrow_down, color: isDark ? Colors.white : Colors.black, size: 28),
+                  style: TextStyle(
+                    color: isDark ? Colors.white : Colors.black,
                     fontWeight: FontWeight.w900,
                     fontSize: 18,
                   ),
                   borderRadius: BorderRadius.circular(15),
-                  dropdownColor: const Color(0xFFFFD700),
+                  dropdownColor: isDark ? const Color(0xFF1F2937) : const Color(0xFFFFD700),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
                       setState(() {
@@ -243,16 +287,16 @@ class _ShopScreenState extends State<ShopScreen> {
               child: displayedProducts.isEmpty 
                 ? const Center(child: Text('No items in this category yet!'))
                 : GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.48,
-                      crossAxisSpacing: 16,
-                      mainAxisSpacing: 16,
+                    gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                      maxCrossAxisExtent: 370,
+                      childAspectRatio: 0.65,
+                      crossAxisSpacing: 20,
+                      mainAxisSpacing: 20,
                     ),
                     itemCount: displayedProducts.length,
                     itemBuilder: (context, index) {
                       final product = displayedProducts[index];
-                      return _buildProductCard(product);
+                      return _buildProductCard(context, product);
                     },
                   ),
             ),
@@ -262,7 +306,10 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  Widget _buildProductCard(Map<String, dynamic> product) {
+  Widget _buildProductCard(BuildContext context, Map<String, dynamic> product) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
@@ -281,90 +328,107 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(24),
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(28),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 15,
-              offset: const Offset(0, 8),
+              color: isDark ? Colors.black.withOpacity(0.30) : Colors.black.withOpacity(0.08),
+              blurRadius: 24,
+              offset: const Offset(0, 12),
             ),
           ],
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: Stack(
-                children: [
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FA),
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    child: Center(
-                      child: Hero(
-                        tag: product['name'],
-                        child: Transform.scale(
-                          scale: 1.2,
-                          child: SizedBox(
-                            height: 240,
-                            width: 200,
-                            child: product['isAsset'] == true
-                                ? Image.asset(
-                                    product['image'],
-                                    fit: BoxFit.contain,
-                                  )
-                                : Image.network(
-                                    product['image'],
-                                    fit: BoxFit.contain,
-                                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, size: 50, color: Colors.grey),
-                                  ),
-                          ),
-                        ),
-                      ),
+            Container(
+              height: 250,
+              margin: const EdgeInsets.all(18),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFFF5F7FB),
+                borderRadius: BorderRadius.circular(26),
+              ),
+              child: Center(
+                child: Hero(
+                  tag: product['name'],
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(26),
+                    child: SizedBox(
+                      height: 220,
+                      width: 220,
+                      child: product['isAsset'] == true
+                          ? Image.asset(product['image'], fit: BoxFit.contain)
+                          : Image.network(
+                              product['image'],
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) => Icon(Icons.pets, size: 56, color: isDark ? Colors.grey[400] : Colors.grey),
+                            ),
                     ),
                   ),
-                ],
+                ),
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(12.0),
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: isDark ? const Color(0xFF1F2937) : const Color(0xFFE9F7EF),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(
+                      product['category'],
+                      style: TextStyle(
+                        color: isDark ? Colors.greenAccent.shade100 : const Color(0xFF1A9A5A),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    product['name'],
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: isDark ? Colors.white : const Color(0xFF1B1F24),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
                   Text(
                     product['brand'],
                     style: TextStyle(
-                      color: Colors.grey[500],
-                      fontSize: 11,
-                      fontWeight: FontWeight.w600,
-                      letterSpacing: 0.5,
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
+                      fontSize: 13,
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    product['name'],
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14,
-                      color: Color(0xFF1A1A1A),
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         '\$${product['price'].toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w900,
                           fontSize: 18,
-                          color: Color(0xFF2D7B37),
+                          color: isDark ? Colors.tealAccent.shade200 : const Color(0xFF1A9A5A),
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(14),
+                        ),
+                        child: const Icon(
+                          Icons.add_shopping_cart_outlined,
+                          color: Color(0xFF4B5563),
+                          size: 18,
                         ),
                       ),
                     ],
@@ -380,7 +444,7 @@ class _ShopScreenState extends State<ShopScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('${product['name']} added to cart!'),
-                            backgroundColor: const Color(0xFF2D7B37),
+                            backgroundColor: const Color(0xFF1A9A5A),
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             duration: const Duration(seconds: 1),
@@ -388,20 +452,21 @@ class _ShopScreenState extends State<ShopScreen> {
                         );
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFFFD700),
-                        foregroundColor: Colors.black,
+                        backgroundColor: const Color(0xFF1A9A5A),
+                        foregroundColor: Colors.white,
                         elevation: 0,
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text(
                         'Add to Cart',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
                       ),
                     ),
                   ),
+                  const SizedBox(height: 16),
                 ],
               ),
             ),

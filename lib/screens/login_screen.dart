@@ -140,6 +140,19 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Login Button
                       ElevatedButton(
                         onPressed: () {
+                          final email = _emailController.text.trim();
+                          final password = _passwordController.text.trim();
+
+                          if (email.isEmpty || password.isEmpty) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Please enter your email and password to login.'),
+                                backgroundColor: Color(0xFF2D7B37),
+                              ),
+                            );
+                            return;
+                          }
+
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => const MainNavigationScreen()),

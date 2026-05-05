@@ -1,20 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:pet_shop_app/theme_manager.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF8F5EE),
+      backgroundColor: theme.scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              decoration: const BoxDecoration(
-                color: Color(0xFF322839),
+              decoration: BoxDecoration(
+                color: isDark ? const Color(0xFF0F172A) : const Color(0xFF322839),
                 borderRadius: BorderRadius.only(
                   bottomLeft: Radius.circular(32),
                   bottomRight: Radius.circular(32),
@@ -25,9 +29,20 @@ class AboutScreen extends StatelessWidget {
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: const [
-                      Icon(Icons.pets, color: Colors.white, size: 28),
-                      Icon(Icons.star_border, color: Colors.white, size: 28),
+                    children: [
+                      const Icon(Icons.pets, color: Colors.white, size: 28),
+                      ValueListenableBuilder<ThemeMode>(
+                        valueListenable: appThemeMode,
+                        builder: (context, themeMode, child) {
+                          return IconButton(
+                            icon: Icon(
+                              themeMode == ThemeMode.dark ? Icons.light_mode : Icons.dark_mode,
+                              color: Colors.white,
+                            ),
+                            onPressed: toggleThemeMode,
+                          );
+                        },
+                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -65,30 +80,30 @@ class AboutScreen extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Our Story',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF322839),
+                        color: isDark ? Colors.white : const Color(0xFF322839),
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
+                    Text(
                       'Whisker Cart began with a single idea: make pet care simple, joyful, and affordable for every family. We bring premium food, trusted accessories, and caring advice to pet parents across the city.',
                       style: TextStyle(
                         fontSize: 16,
                         height: 1.6,
-                        color: Color(0xFF5A5662),
+                        color: isDark ? Colors.grey[300] : const Color(0xFF5A5662),
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'What Makes Us Different',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF322839),
+                        color: isDark ? Colors.white : const Color(0xFF322839),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -110,39 +125,39 @@ class AboutScreen extends StatelessWidget {
                       description: 'Guidance on nutrition, grooming, and toys so you can care for every whisker.',
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'Our Promise',
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
-                        color: Color(0xFF322839),
+                        color: isDark ? Colors.white : const Color(0xFF322839),
                       ),
                     ),
                     const SizedBox(height: 14),
-                    const Text(
+                    Text(
                       'At Whisker Cart, we promise: happy pets, helpful people, and quality products delivered with love. Whether you shop online or in-store, your pet’s comfort comes first.',
                       style: TextStyle(
                         fontSize: 16,
                         height: 1.6,
-                        color: Color(0xFF5A5662),
+                        color: isDark ? Colors.grey[300] : const Color(0xFF5A5662),
                       ),
                     ),
                     const SizedBox(height: 30),
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: const Color(0xFFFFF3D6),
+                        color: isDark ? const Color(0xFF1F2937) : const Color(0xFFFFF3D6),
                         borderRadius: BorderRadius.circular(24),
                       ),
                       child: Row(
-                        children: const [
-                          Icon(Icons.location_on_outlined, color: Color(0xFF322839), size: 28),
-                          SizedBox(width: 16),
+                        children: [
+                          Icon(Icons.location_on_outlined, color: isDark ? Colors.tealAccent.shade100 : const Color(0xFF322839), size: 28),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: Text(
                               'Find us at 24 Paws Avenue, Petville. Open daily for happy shopping and tail wagging.',
                               style: TextStyle(
-                                color: Color(0xFF322839),
+                                color: isDark ? Colors.white : const Color(0xFF322839),
                                 fontSize: 15,
                                 height: 1.4,
                               ),
@@ -155,7 +170,7 @@ class AboutScreen extends StatelessWidget {
                     ElevatedButton(
                       onPressed: () {},
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF322839),
+                        backgroundColor: isDark ? const Color(0xFF22C55E) : const Color(0xFF322839),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
                         ),
@@ -185,19 +200,20 @@ class _FeatureChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.14),
+        color: isDark ? Colors.white.withOpacity(0.08) : Colors.white.withOpacity(0.14),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.white, size: 18),
+          Icon(icon, color: isDark ? Colors.white : Colors.white, size: 18),
           const SizedBox(width: 8),
           Text(
             label,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -218,14 +234,15 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF111827) : Colors.white,
         borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: isDark ? Colors.black.withOpacity(0.35) : Colors.black.withOpacity(0.05),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -237,10 +254,10 @@ class _InfoCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFFFFF3D6),
+              color: isDark ? const Color(0xFF164E63) : const Color(0xFFFFF3D6),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Icon(icon, color: const Color(0xFF322839), size: 26),
+            child: Icon(icon, color: isDark ? Colors.tealAccent.shade100 : const Color(0xFF322839), size: 26),
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -249,19 +266,19 @@ class _InfoCard extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFF322839),
+                    color: isDark ? Colors.white : const Color(0xFF322839),
                   ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   description,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
-                    color: Color(0xFF6B6377),
+                    color: isDark ? Colors.grey[300] : const Color(0xFF6B6377),
                   ),
                 ),
               ],

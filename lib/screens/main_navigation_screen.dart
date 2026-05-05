@@ -44,9 +44,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             });
           },
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFF322839), // Dark eggplant to match our theme
-          unselectedItemColor: Colors.grey,
+          backgroundColor: Theme.of(context).bottomNavigationBarTheme.backgroundColor,
+          selectedItemColor: Theme.of(context).bottomNavigationBarTheme.selectedItemColor,
+          unselectedItemColor: Theme.of(context).bottomNavigationBarTheme.unselectedItemColor,
           showSelectedLabels: true,
           showUnselectedLabels: true,
           elevation: 0, // Using the Container's shadow instead

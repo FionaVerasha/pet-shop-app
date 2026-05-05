@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_shop_app/screens/login_screen.dart';
+import 'package:pet_shop_app/theme_manager.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,14 +11,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Whisker Cart',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blueAccent),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: appThemeMode,
+      builder: (context, themeMode, child) {
+        return MaterialApp(
+          title: 'Whisker Cart',
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme,
+          darkTheme: darkTheme,
+          themeMode: themeMode,
+          home: const LoginScreen(),
+        );
+      },
     );
   }
 }
