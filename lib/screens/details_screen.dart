@@ -1,36 +1,19 @@
 import 'package:flutter/material.dart';
 
-class DetailsScreen extends StatefulWidget {
+class DetailsScreen extends StatelessWidget {
   final Map<String, dynamic>? pet;
-  final int cartCount;
   final void Function(Map<String, dynamic>)? onAddToCart;
-  final VoidCallback? onCartTap;
   
   const DetailsScreen({
     super.key,
     this.pet,
-    this.cartCount = 0,
     this.onAddToCart,
-    this.onCartTap,
   });
-
-  @override
-  State<DetailsScreen> createState() => _DetailsScreenState();
-}
-
-class _DetailsScreenState extends State<DetailsScreen> {
-  late int currentCartCount;
-
-  @override
-  void initState() {
-    super.initState();
-    currentCartCount = widget.cartCount;
-  }
 
   @override
   Widget build(BuildContext context) {
     // If no pet provided, inject a placeholder mapping representing Mikka
-    final data = widget.pet ?? {
+    final data = pet ?? {
       'name': 'Mikka',
       'gender': 'Male',
       'age': '1 year',
@@ -44,103 +27,83 @@ class _DetailsScreenState extends State<DetailsScreen> {
     final Color bgColor = isProduct ? const Color(0xFFF8F9FA) : Color(data['bgColor']);
 
     return Scaffold(
-      backgroundColor: bgColor,
+      backgroundColor: const Color(0xFF1A1C28),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black87),
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 12.0),
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black87),
-                  onPressed: widget.onCartTap,
-                ),
-                if (currentCartCount > 0)
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFFFD700),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Text(
-                        currentCartCount.toString(),
-                        style: const TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
+        centerTitle: true,
+        title: const Text(
+          'Pet Details',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
       ),
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // Background Color and Circle
+          Positioned.fill(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Color(0xFF1A1C28),
+              ),
+            ),
+          ),
           Positioned(
-            top: 0,
+            top: 80,
             left: 0,
             right: 0,
-            height: MediaQuery.of(context).size.height * 0.6,
-            child: Container(
-              color: bgColor,
-              child: Center(
+            child: Center(
+              child: Container(
+                width: 280,
+                height: 280,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ),
+          ),
+          Positioned(
+            top: 98,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: Hero(
+                tag: data['name'],
                 child: Container(
-                  width: 300,
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: isProduct ? Colors.black.withOpacity(0.02) : Colors.white24,
+                  width: 220,
+                  height: 220,
+                  decoration: const BoxDecoration(
+                    color: Colors.white,
                     shape: BoxShape.circle,
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Center(
+                    child: isProduct
+                      ? data['isAsset'] == true
+                          ? Image.asset(data['image'], fit: BoxFit.contain)
+                          : Image.network(data['image'], fit: BoxFit.contain)
+                      : ClipOval(
+                          child: Image.network(
+                            data['image'],
+                            fit: BoxFit.cover,
+                            errorBuilder: (c, e, s) => const Icon(Icons.pets, size: 100, color: Colors.white),
+                          ),
+                        ),
                   ),
                 ),
               ),
             ),
           ),
-          
-          // Image
           Positioned(
-            top: MediaQuery.of(context).padding.top + 40,
-            left: 50,
-            right: 50,
-            height: MediaQuery.of(context).size.height * 0.40,
-            child: Hero(
-              tag: data['name'],
-              child: isProduct 
-                ? data['isAsset'] == true
-                    ? Image.asset(data['image'], fit: BoxFit.contain)
-                    : Image.network(data['image'], fit: BoxFit.contain)
-                : ClipOval(
-                    child: Image.network(
-                      data['image'],
-                      fit: BoxFit.cover,
-                      errorBuilder: (c,e,s) => const Icon(Icons.pets, size: 100, color: Colors.white),
-                    ),
-                  ),
-            ),
-          ),
-
-          // Bottom Sheet Element
-          Positioned(
-            bottom: 0,
+            top: 320,
             left: 0,
             right: 0,
-            height: MediaQuery.of(context).size.height * 0.55,
+            bottom: 0,
             child: Container(
-              padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 20),
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.only(
@@ -148,51 +111,51 @@ class _DetailsScreenState extends State<DetailsScreen> {
                   topRight: Radius.circular(40),
                 ),
               ),
+              padding: const EdgeInsets.only(top: 30, left: 24, right: 24, bottom: 20),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Brand (for products)
-                    if (isProduct)
-                      Text(
-                        data['brand'].toUpperCase(),
-                        style: TextStyle(
-                          color: Colors.grey[400],
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                    
-                    // Title
                     Text(
                       data['name'],
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                        color: Colors.black,
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    
-                    // Location or Price
+                    const SizedBox(height: 10),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Icon(isProduct ? Icons.payments_outlined : Icons.location_on, color: isProduct ? const Color(0xFF2D7B37) : Colors.grey, size: 18),
-                        const SizedBox(width: 4),
-                        Text(
-                          isProduct ? '\$${data['price'].toStringAsFixed(2)}' : data['distance'],
-                          style: TextStyle(
-                            color: isProduct ? const Color(0xFF2D7B37) : Colors.grey, 
-                            fontSize: isProduct ? 20 : 14,
-                            fontWeight: isProduct ? FontWeight.w900 : FontWeight.normal,
+                        Expanded(
+                          child: Text(
+                            isProduct ? data['brand'] : data['distance'],
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 14,
+                            ),
                           ),
                         ),
+                        if (isProduct)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF1A1C28),
+                              borderRadius: BorderRadius.circular(18),
+                            ),
+                            child: Text(
+                              '\$${data['price'].toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                          ),
                       ],
                     ),
                     const SizedBox(height: 24),
-                    
-                    // Info boxes
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -202,15 +165,16 @@ class _DetailsScreenState extends State<DetailsScreen> {
                       ],
                     ),
                     const SizedBox(height: 24),
-                    
-                    // About section
-                    Text(
-                      isProduct ? 'Description:' : 'About:',
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    const Text(
+                      'Description',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 10),
                     Text(
-                      isProduct 
+                      isProduct
                         ? 'This premium ${data['category'].toLowerCase()} food is formulated with high-quality ingredients to support your pet\'s health and vitality. It contains essential vitamins, minerals, and proteins for a balanced diet.'
                         : 'There are some dogs that are naturally very intelligent. They do not need to repeat the command 100 times, because they grasp everything on the fly.',
                       style: TextStyle(
@@ -219,38 +183,38 @@ class _DetailsScreenState extends State<DetailsScreen> {
                         fontSize: 14,
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    
-                    // Main Action Button
+                    const SizedBox(height: 28),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: () {
-                          if (isProduct) {
-                            if (widget.onAddToCart != null) {
-                              widget.onAddToCart!(data);
-                            }
-                            setState(() {
-                              currentCartCount += 1;
-                            });
+                          if (isProduct && onAddToCart != null) {
+                            onAddToCart!(data);
+                          }
+                          if (!isProduct) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('${data['name']} added to cart!'), backgroundColor: const Color(0xFF2D7B37)),
+                              const SnackBar(content: Text('Adoption request sent!'), backgroundColor: Color(0xFF1A1C28)),
+                            );
+                          }
+                          if (isProduct) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('${data['name']} added to cart!'), backgroundColor: const Color(0xFF1A1C28)),
                             );
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: isProduct ? const Color(0xFFFFD700) : Colors.black87,
-                          foregroundColor: isProduct ? Colors.black : Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          backgroundColor: const Color(0xFF1A1C28),
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 18),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
                           elevation: 0,
                         ),
                         child: Text(
-                          isProduct ? 'Add to Cart' : 'Adopt me',
+                          isProduct ? 'Add to Cart' : 'Adopt now',
                           style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),

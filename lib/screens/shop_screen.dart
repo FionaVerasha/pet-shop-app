@@ -270,13 +270,11 @@ class _ShopScreenState extends State<ShopScreen> {
           MaterialPageRoute(
             builder: (context) => DetailsScreen(
               pet: product,
-              cartCount: cartItems.length,
               onAddToCart: (item) {
                 setState(() {
                   cartItems.add(item);
                 });
               },
-              onCartTap: () => _showCartItems(context),
             ),
           ),
         );

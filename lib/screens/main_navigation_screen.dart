@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pet_shop_app/screens/home_screen.dart';
 import 'package:pet_shop_app/screens/shop_screen.dart';
 import 'package:pet_shop_app/screens/details_screen.dart';
-import 'package:pet_shop_app/screens/profile_screen.dart';
+import 'package:pet_shop_app/screens/about_screen.dart';
 
 class MainNavigationScreen extends StatefulWidget {
   const MainNavigationScreen({super.key});
@@ -19,7 +19,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     ShopScreen(),
     DetailsScreen(),
-    ProfileScreen(),
+    AboutScreen(),
   ];
 
   @override

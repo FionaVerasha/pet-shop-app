@@ -11,6 +11,10 @@ class HomeScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                child: _buildHeader(context),
+              ),
               LayoutBuilder(
                 builder: (context, constraints) {
                   if (constraints.maxWidth > 800) {
@@ -141,6 +145,68 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: const [
+            Text(
+              'Welcome back!',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF14211D),
+              ),
+            ),
+            Icon(Icons.pets, size: 28, color: Color(0xFF1A9A5A)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        const Text(
+          'Find premium pet supplies, expert tips, and joyful care for every fur friend.',
+          style: TextStyle(
+            fontSize: 16,
+            color: Color(0xFF6B7280),
+            height: 1.5,
+          ),
+        ),
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+          decoration: BoxDecoration(
+            color: const Color(0xFFF3F4F6),
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            children: [
+              const Icon(Icons.search, color: Color(0xFF9CA3AF)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search food, toys, accessories...',
+                    border: InputBorder.none,
+                    hintStyle: TextStyle(color: Colors.grey.shade500),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF1A9A5A),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: const Icon(Icons.tune, color: Colors.white),
+              ),
+            ],
+          ),
         ),
       ],
     );
