@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pet_shop_app/screens/home_screen.dart';
-import 'package:pet_shop_app/screens/categories_screen.dart';
+import 'package:pet_shop_app/screens/shop_screen.dart';
 import 'package:pet_shop_app/screens/details_screen.dart';
 import 'package:pet_shop_app/screens/profile_screen.dart';
 
@@ -17,7 +17,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   // The 4 screens corresponding to the bottom navigation bar tabs
   final List<Widget> _screens = const [
     HomeScreen(),
-    CategoriesScreen(),
+    ShopScreen(),
     DetailsScreen(),
     ProfileScreen(),
   ];
@@ -59,17 +59,17 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             BottomNavigationBarItem(
               icon: Icon(Icons.grid_view),
               activeIcon: Icon(Icons.grid_view_rounded),
-              label: 'Categories',
+              label: 'Shop',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.feed_outlined),
               activeIcon: Icon(Icons.feed),
-              label: 'Details',
+              label: 'Detail',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.person_outline),
               activeIcon: Icon(Icons.person),
-              label: 'Profile',
+              label: 'About',
             ),
           ],
         ),
